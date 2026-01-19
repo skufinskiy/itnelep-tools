@@ -1,0 +1,173 @@
+name: Build ITNELEP Tools
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    name: Build Windows .exe
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+      
+      - name: Build .exe
+        run: python build_all.py
+      
+      - name: Upload .exe
+        uses: actions/upload-artifact@v3
+        with:
+          name: ITNELEP-Tools-Windows
+          path: ITNELEP_Tools.exe
+      
+      - name: Create Windows Package
+        run: |
+          mkdir ITNELEP_Tools_Windows
+          copy ITNELEP_Tools.exe ITNELEP_Tools_Windows\
+          copy service_account.json ITNELEP_Tools_Windows\
+          copy README_EXE.md ITNELEP_Tools_Windows\
+      
+      - name: Upload Windows Package
+        uses: actions/upload-artifact@v3
+        with:
+          name: ITNELEP-Tools-Windows-Package
+          path: ITNELEP_Tools_Windows\
+
+  build-macos:
+    name: Build macOS .app
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 install -r requirements.txt
+          pip3 install pyinstaller
+      
+      - name: Build .app
+        run: python3 build_all.py
+      
+      - name: Create macOS Package
+        run: |
+          mkdir ITNELEP_Tools_macOS
+          cp -r "ITNELEP Tools.app" ITNELEP_Tools_macOS/
+          cp service_account.json ITNELEP_Tools_macOS/
+          cp README_MACOS.md ITNELEP_Tools_macOS/
+      
+      - name: Create DMG
+        run: |
+          hdiutil create -volname "ITNELEP Tools" -srcfolder ITNELEP_Tools_macOS -ov -format UDZO ITNELEP_Tools.dmg
+      
+      - name: Upload .dmg
+        uses: actions/upload-artifact@v3
+        with:
+          name: ITNELEP-Tools-macOS-DMG
+          path: ITNELEP_Tools.dmg
+      
+      - name: Upload macOS Package
+        uses: actions/upload-artifact@v3
+        with:
+          name: ITNELEP-Tools-macOS-Package
+          path: ITNELEP_Tools_macOS/
+
+  create-release:
+    name: Create Release
+    needs: [build-windows, build-macos]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Download Windows Package
+        uses: actions/download-artifact@v3
+        with:
+          name: ITNELEP-Tools-Windows-Package
+          path: windows/
+      
+      - name: Download macOS DMG
+        uses: actions/download-artifact@v3
+        with:
+          name: ITNELEP-Tools-macOS-DMG
+          path: macos/
+      
+      - name: Create ZIP packages
+        run: |
+          cd windows && zip -r ../ITNELEP_Tools_Windows.zip . && cd ..
+          cp macos/ITNELEP_Tools.dmg ./
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ITNELEP_Tools_Windows.zip
+            ITNELEP_Tools.dmg
+          body: |
+            ## ITNELEP Tools ${{ github.ref_name }}
+            
+            ### 📦 Downloads:
+            
+            **Windows:**
+            - `ITNELEP_Tools_Windows.zip` - Contains .exe and required files
+            
+            **macOS:**
+            - `ITNELEP_Tools.dmg` - macOS installer with .app
+            
+            ### 📋 Requirements:
+            
+            **Windows:**
+            - Windows 7/8/10/11 (64-bit)
+            - ~500 MB free space
+            - Internet (first run only)
+            
+            **macOS:**
+            - macOS 10.13 (High Sierra) or later
+            - ~500 MB free space
+            - Internet (first run only)
+            
+            ### 🚀 Installation:
+            
+            **Windows:**
+            1. Download and extract `ITNELEP_Tools_Windows.zip`
+            2. Run `ITNELEP_Tools.exe`
+            3. Press Ctrl+H to configure settings
+            
+            **macOS:**
+            1. Download `ITNELEP_Tools.dmg`
+            2. Open the DMG and drag app to Applications
+            3. Control+Click → Open (first time only)
+            4. Press ⌘+H to configure settings
+            
+            ### ✨ Features:
+            
+            - ✅ All 4 tabs fully functional
+            - ✅ Headless mode by default
+            - ✅ Auto-authentication from settings
+            - ✅ Light and dark themes
+            - ✅ No Python required!
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
