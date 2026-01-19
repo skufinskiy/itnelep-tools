@@ -1,0 +1,48 @@
+# ⚡ Быстрое исправление GitHub Actions
+
+## Если вы получили ошибку "deprecated v3"
+
+### ✅ Решение (2 минуты):
+
+```bash
+# 1. Скачайте новый архив unified_itnelep_universal.zip
+# 2. Распакуйте его
+
+# 3. Скопируйте исправленный файл в ваш проект
+cp unified_app_final/.github/workflows/build.yml ваш_проект/.github/workflows/
+
+# 4. Загрузите обновление на GitHub
+cd ваш_проект
+git add .github/workflows/build.yml
+git commit -m "Fix: Update GitHub Actions to v4"
+git push
+
+# 5. Готово! Теперь создайте новый tag
+git tag v1.0.1
+git push origin v1.0.1
+```
+
+---
+
+## Что было исправлено:
+
+```yaml
+# БЫЛО (ошибка):
+uses: actions/upload-artifact@v3   ❌
+
+# СТАЛО (работает):
+uses: actions/upload-artifact@v4   ✅
+```
+
+---
+
+## Проверка:
+
+После обновления:
+1. GitHub → Actions
+2. Должна пройти сборка без ошибок ✅
+3. Releases должны создаться ✅
+
+---
+
+Подробнее: **GITHUB_ACTIONS_FIX.md**

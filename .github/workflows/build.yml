@@ -13,10 +13,10 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       
@@ -30,7 +30,7 @@ jobs:
         run: python build_all.py
       
       - name: Upload .exe
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ITNELEP-Tools-Windows
           path: ITNELEP_Tools.exe
@@ -43,7 +43,7 @@ jobs:
           copy README_EXE.md ITNELEP_Tools_Windows\
       
       - name: Upload Windows Package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ITNELEP-Tools-Windows-Package
           path: ITNELEP_Tools_Windows\
@@ -54,10 +54,10 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       
@@ -82,13 +82,13 @@ jobs:
           hdiutil create -volname "ITNELEP Tools" -srcfolder ITNELEP_Tools_macOS -ov -format UDZO ITNELEP_Tools.dmg
       
       - name: Upload .dmg
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ITNELEP-Tools-macOS-DMG
           path: ITNELEP_Tools.dmg
       
       - name: Upload macOS Package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ITNELEP-Tools-macOS-Package
           path: ITNELEP_Tools_macOS/
@@ -101,16 +101,16 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       
       - name: Download Windows Package
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ITNELEP-Tools-Windows-Package
           path: windows/
       
       - name: Download macOS DMG
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ITNELEP-Tools-macOS-DMG
           path: macos/
