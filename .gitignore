@@ -51,9 +51,14 @@ positions_history.json
 # Config (может содержать чувствительные данные)
 config.json
 
-# Google API credentials
+# Google API credentials (РЕАЛЬНЫЕ файлы - НЕ загружать!)
 service_account.json
 credentials.json
+
+# Example файлы (загружать в репо!)
+!service_account.json.example
+!credentials.json.example
+!config.json.example
 
 # OS
 .DS_Store

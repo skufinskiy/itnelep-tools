@@ -26,6 +26,12 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller
       
+      - name: Create placeholder files
+        run: |
+          copy service_account.json.example service_account.json
+          copy credentials.json.example credentials.json
+          if not exist config.json echo {"login":"","password":"","spreadsheet_id":"","sheet_inn_id":"","sheet_map_id":"","sheet_map_tab":"","service_account_file":"service_account.json","dadata_token":"","openai_api_key":"","credentials_file":"credentials.json"} > config.json
+      
       - name: Build .exe
         run: python build_all.py
       
@@ -66,6 +72,12 @@ jobs:
           python3 -m pip install --upgrade pip
           pip3 install -r requirements.txt
           pip3 install pyinstaller
+      
+      - name: Create placeholder files
+        run: |
+          cp service_account.json.example service_account.json
+          cp credentials.json.example credentials.json
+          if [ ! -f config.json ]; then echo '{"login":"","password":"","spreadsheet_id":"","sheet_inn_id":"","sheet_map_id":"","sheet_map_tab":"","service_account_file":"service_account.json","dadata_token":"","openai_api_key":"","credentials_file":"credentials.json"}' > config.json; fi
       
       - name: Build .app
         run: python3 build_all.py

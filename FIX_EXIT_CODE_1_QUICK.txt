@@ -1,0 +1,61 @@
+# ⚡ Быстрое исправление "Exit Code 1"
+
+## Если GitHub Actions падает с exit code 1:
+
+### ✅ Решение (3 минуты):
+
+```bash
+# 1. Скачайте новый архив unified_itnelep_universal.zip
+# 2. Добавьте новые файлы в ваш проект
+
+cd ваш_проект
+
+# 3. Добавьте example файлы
+git add service_account.json.example
+git add credentials.json.example
+git add .gitignore
+git add .github/workflows/build.yml
+
+# 4. Commit & Push
+git commit -m "Fix: Add placeholder files for build"
+git push
+
+# 5. Создайте новый tag
+git tag v1.0.2
+git push origin v1.0.2
+
+# 6. Готово! ✅
+```
+
+---
+
+## Что было исправлено:
+
+**Проблема:**
+```
+PyInstaller не находил файлы:
+- service_account.json   ❌
+- credentials.json       ❌
+```
+
+**Решение:**
+```
+Созданы example файлы:
+- service_account.json.example   ✅
+- credentials.json.example       ✅
+
+Workflow копирует их перед сборкой!
+```
+
+---
+
+## Проверка:
+
+После push:
+1. GitHub → Actions
+2. Должно быть ✅ вместо ❌
+3. Через 15 минут - файлы в Releases
+
+---
+
+Подробнее: **FIX_EXIT_CODE_1.md**
